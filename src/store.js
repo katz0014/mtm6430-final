@@ -1,37 +1,188 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axiosAuth from "./axios-auth";
+import router from "./router";
+import axios from "axios";
+import {
+  resolveAny
+} from "dns";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    username: "",
-    email: "",
-    password: ""
+    idToken: null,
+    userId: null,
+    error: "",
+    user: null
   },
   mutations: {
-    USER_INFO(state, data) {
-      state.username = data.username;
-      state.email = data.email;
-      state.password = data.password;
+    AUTH_USER(state, data) {
+      state.idToken = userData.token;
+      state.userId = userData.userId;
+    },
+    SET_ERROR(state, errorMessage) {
+      state.errpr = errorMessage;
+    },
+    EMPTY_ERROR(state) {
+      state.error = "";
+    },
+    CLEAR_DATA(state) {
+      state.idToken = null;
+      state.userId = null;
+    },
+    STORE_USER(state, user) {
+      state.user = user;
     }
   },
   actions: {
-    updateUser({ commit }, { data }) {
-      // commit the mutation to update the state, sending the payload as {quantity, product }
-      commit("USER_INFO", {
-        username: data.username,
-        email: data.email,
-        password: data.password
-      });
-    }
-  },
-  getters: {
-    getInfo: state => data => {
-      return state.data;
+    signUp({
+      commit,
+      dispatch
+    }, authData) {
+      axiosAuth.post( // add firebase link here, 
+          {
+            email: authData.email,
+            password: authData.password,
+            returnSecureToken: true
+
+          }).then(res => {
+          console.log(res);
+          commit("AUTH_USER", {
+            token: res.data.idToken,
+            userId: res.data.localId
+          });
+          const now = new Date();
+          const expirationDate = new Date(
+            now.getTime() + res.data.expiresIn * 1000
+          );
+
+          localStorage.setItem("token", res.data.idToken);
+          localStorage.setItem("userId", res.data.localId);
+          localStorage.setItem("expirationDate", expirationDate);
+          localStorage.setItem("userEmail", authData.email);
+
+          dispatch("storeUser", authData);
+
+          router.push({
+            name: "dashboard "
+          });
+        })
+        .catch(error => {
+          console.log(error.response.data.error.message);
+        });
     },
-    getUserIndex: state => data => {
-      return state.data.findIndex(data => data.username);
+    signIn({
+      commit
+    }, authDara) {
+      axiosAuth.post(
+        //"// add accounts: link here"
+        {
+          email: authData.email,
+          password: authData.password,
+          returnSecureToken: true
+        }).then(res => {
+        console.log(res);
+        commit("AUTH_USER", {
+          token: res.data.idToken,
+          userId: res.data.localId
+        });
+
+        const now = new Date();
+        const expirationDate = new Date(
+          now.getTime() + res.data.expiresIn * 1000
+        );
+
+        localStorage.setItem("token", res.data.idToken);
+        localStorage.setItem("userId", res.data.localId);
+        localStorage.setItem("expirationDate", expirationDate);
+        localStorage.setItem("userEmail", authData.email);
+
+        router.push({
+          name: "dashboard "
+        });
+      }).catcj(error => {
+        console.log(error.response.data.error.message);
+        commit("SET_ERROR", error.response.data.error.message);
+      });
+    },
+    clearError({
+      commit
+    }) {
+      commit("EMPTY_ERROR");
+    },
+    logout({
+      commit
+    }) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("expirationDate");
+      localStorage.removeItem("userId");
+
+      commit("CLEAR_DATA");
+
+      router.push({
+        name: "signin"
+      });
+    },
+    autoLogin({
+      commit
+    }) {
+      const token = local.Storage.getItem("token");
+      const expirationdate = localStorage.getItem("expirationDate");
+      const userId = localStorage.getItem("userId");
+
+      const now = new Date();
+
+      if (now >= expirationDate) {
+        return;
+      }
+      commit("AUTH_USER", {
+        token: token,
+        userId: userId
+      });
+    },
+    storeuser({
+      state
+    }, userData) {
+      if (!state.idToken) {
+        return;
+      }
+      axios.post("https://katz0014-final.firebaseio.com/users.json" + "?auth=" + state.idToken, userData).then(res => console.log(res)).catch(error => console.log(error.message));
+    },
+    fetchUser({
+      commit,
+      state
+    }, userEmail) {
+      if (!state.idtoken) {
+        return;
+      }
+      axios.get("https://katz0014-final.firebaseio.com/users.json" + "?auth=" + state.idToken).then(res => {
+        const data = res.data;
+        for (let key in data) {
+          const user = data[key];
+          if (user.email == userEmail) {
+            console.log(user);
+            user.id = key;
+            commit("STORE_USER", user);
+          }
+        }
+      });
+    },
+    updateUser({
+      state
+    }) {
+      axios.patch("https://katz0014-final.firebaseio.com/users/" + state.user.id + ".json" + "?auth=" + state.idToken, {
+        name: state.user.name
+      }).then(res => {
+        console.log(res);
+      }).catch(error => console.log(error.response));
+    }),
+  getters: {
+    isAuthenticated(state) {
+      return state.idToken !== null;
+    },
+    getUser(state) {
+      return state.user;
     }
   }
 });

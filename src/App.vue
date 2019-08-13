@@ -1,5 +1,12 @@
 <template>
   <div id="app">
+    <div id="nav">
+      <router-link :to="{ name: 'home'}">Home</router-link>|
+      <router-link v-if="!auth" :to="{ name: 'signup' }">Sign Up</router-link>|
+      <router-link v-if="!auth" :to="{ name: 'signin' }">Sign In</router-link>|
+      <router-link v-if="auth" :to="{ name: 'dashboard' }">Dashboard</router-link>
+      <a v-if="auth" class="logout" @click="logout">Logout</a>
+    </div>
     <Header />
     <router-view />
     <Footer />
