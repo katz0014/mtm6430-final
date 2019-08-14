@@ -50,8 +50,8 @@ export default {
       return !this.userData ? false : this.userData;
     }
   },
-  create() {
-    this.getuserData();
+  created() {
+    this.getUserData();
   },
 
   methods: {
@@ -59,9 +59,6 @@ export default {
     getUserData() {
       let userEmail = localStorage.getItem("userEmail");
       this.fetchUser(userEmail);
-
-      let userName = localStorage.getItem("userName");
-      this.fetchUser(userName);
     },
     submitForm() {
       this.updateUser();

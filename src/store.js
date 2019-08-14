@@ -110,6 +110,7 @@ export default new Vuex.Store({
           router.push({
             name: "dashboard"
           });
+
         })
         .catch(error => {
           if (error.response) {

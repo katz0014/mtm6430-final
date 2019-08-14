@@ -30,6 +30,7 @@ export default {
         email: this.email,
         password: this.pass
       };
+      console.log(formData);
       this.signIn(formData);
     }
   }
