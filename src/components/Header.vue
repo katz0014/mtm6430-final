@@ -1,10 +1,6 @@
 <template>
   <div class="mainHeader">
-    <h2>State Manager</h2>
-    <div id="nav">
-      <router-link :to="{ name: 'Signup' }">Home</router-link>
-      <router-link :to="{ name: 'Dashboard' }">Dashboard</router-link>
-    </div>
+    <h2>My App</h2>
   </div>
 </template>
 

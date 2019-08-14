@@ -3,9 +3,6 @@ import Vuex from "vuex";
 import axiosAuth from "./axios-auth";
 import router from "./router";
 import axios from "axios";
-import {
-  resolveAny
-} from "dns";
 
 Vue.use(Vuex);
 
@@ -17,12 +14,12 @@ export default new Vuex.Store({
     user: null
   },
   mutations: {
-    AUTH_USER(state, data) {
+    AUTH_USER(state, userData) {
       state.idToken = userData.token;
       state.userId = userData.userId;
     },
     SET_ERROR(state, errorMessage) {
-      state.errpr = errorMessage;
+      state.error = errorMessage;
     },
     EMPTY_ERROR(state) {
       state.error = "";
@@ -40,13 +37,11 @@ export default new Vuex.Store({
       commit,
       dispatch
     }, authData) {
-      axiosAuth.post( // add firebase link here, 
-          {
-            email: authData.email,
-            password: authData.password,
-            returnSecureToken: true
-
-          }).then(res => {
+      axiosAuth.post("accounts:signUp?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0", {
+          email: authData.email,
+          password: authData.password,
+          returnSecureToken: true
+        }).then(res => {
           console.log(res);
           commit("AUTH_USER", {
             token: res.data.idToken,
@@ -70,14 +65,15 @@ export default new Vuex.Store({
         })
         .catch(error => {
           console.log(error.response.data.error.message);
+
+          commit("SET_ERROR", error.response.data.error.message);
         });
     },
     signIn({
       commit
-    }, authDara) {
+    }, authData) {
       axiosAuth.post(
-        //"// add accounts: link here"
-        {
+        "accounts:signInWithPassword?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0", {
           email: authData.email,
           password: authData.password,
           returnSecureToken: true
@@ -101,7 +97,7 @@ export default new Vuex.Store({
         router.push({
           name: "dashboard "
         });
-      }).catcj(error => {
+      }).catch(error => {
         console.log(error.response.data.error.message);
         commit("SET_ERROR", error.response.data.error.message);
       });
@@ -127,8 +123,8 @@ export default new Vuex.Store({
     autoLogin({
       commit
     }) {
-      const token = local.Storage.getItem("token");
-      const expirationdate = localStorage.getItem("expirationDate");
+      const token = localStorage.getItem("token");
+      const expirationDate = localStorage.getItem("expirationDate");
       const userId = localStorage.getItem("userId");
 
       const now = new Date();
@@ -176,7 +172,8 @@ export default new Vuex.Store({
       }).then(res => {
         console.log(res);
       }).catch(error => console.log(error.response));
-    }),
+    }
+  },
   getters: {
     isAuthenticated(state) {
       return state.idToken !== null;

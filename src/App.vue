@@ -1,27 +1,32 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link :to="{ name: 'home'}">Home</router-link>|
+      <router-link :to="{ name: 'home' }">Home</router-link>|
       <router-link v-if="!auth" :to="{ name: 'signup' }">Sign Up</router-link>|
       <router-link v-if="!auth" :to="{ name: 'signin' }">Sign In</router-link>|
       <router-link v-if="auth" :to="{ name: 'dashboard' }">Dashboard</router-link>
       <a v-if="auth" class="logout" @click="logout">Logout</a>
     </div>
-    <Header />
+    <div v-if="error" @click="clearError" class="error">{{ error }}</div>
     <router-view />
-    <Footer />
   </div>
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
-import Footer from "@/components/Footer.vue";
+import { mapState, mapActions, mapGetters } from "vuex";
 
 export default {
-  name: "app",
-  components: {
-    Header,
-    Footer
+  computed: {
+    ...mapState(["error"]),
+    ...mapGetters({
+      auth: "isAuthenticated"
+    })
+  },
+  methods: {
+    ...mapActions(["clearError", "logout", "autoLogin"])
+  },
+  created() {
+    this.autoLogin();
   }
 };
 </script>

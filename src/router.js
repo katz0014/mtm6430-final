@@ -17,17 +17,24 @@ export default new Router({
       component: Home
     },
     {
-      path: "/",
-      name: "Signup",
+      path: "signup",
+      name: "signup",
       component: Signup
     },
     {
       path: "signin",
       name: "signin",
-      component: SignIn
+      component: SignIn,
+      beforeEnter(to, from, next) {
+        if (!store.state.idToken) {
+          next();
+        } else {
+          next("/dashboard");
+        }
+      }
     },
     {
-      path: "/Dashboard",
+      path: "/dashboard",
       name: "Dashboard",
       component: Dashboard,
       beforeEnter(to, from, next) {

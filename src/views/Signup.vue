@@ -1,51 +1,55 @@
 <template>
   <div class="signUp">
-    <div>
-      <h2>Sign Up</h2>
-      <el-form
-        class="form"
-        :model="ruleForm"
-        ref="ruleForm"
-        @submit.prevent="submitForm"
-      >
-        <el-form-item prop="name" label="NAME">
-          <el-input v-model="ruleForm.name" placeholder="Your Name"></el-input>
-        </el-form-item>
-        <el-form-item prop="email" label="EMAIL">
-          <el-input
-            v-model="ruleForm.email"
-            placeholder="example@gmail.com"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password" label="PASSWORD">
-          <el-input type="password" v-model="ruleForm.password"></el-input>
-        </el-form-item>
-        <el-button class="button" type="primary" @click="submitForm"
-          >Submit</el-button
-        >
-      </el-form>
-    </div>
+    <h1>Sign Up</h1>
+    <form @submit.prevent="onSubmit">
+      <div>
+        <label for="name">Name</label>
+        <input type="text" v-model="name" required />
+      </div>
+      <div>
+        <label for="age">Age</label>
+        <input type="age" v-model="age" required />
+      </div>
+      <div>
+        <label for="city">City</label>
+        <input type="city" v-model="city" required />
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" v-model="email" required />
+      </div>
+      <div>
+        <label for="pass">Password</label>
+        <input type="password" v-model="pass" required />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
   </div>
 </template>
 
 <script>
 import { mapActions } from "vuex";
 export default {
-  data: function() {
+  data() {
     return {
-      ruleForm: {
-        name: "",
-        email: "",
-        password: ""
-      },
-      userInput: {}
+      name: "",
+      age: "",
+      city: "",
+      email: "",
+      pass: ""
     };
   },
   methods: {
-    ...mapActions(["setInput"]),
-    formSubmit() {
-      this.setInput(this.user);
-      this.$router.replace("/Dashboard");
+    ...mapActions(["signUp"]),
+    onSubmit() {
+      const formData = {
+        name: this.name,
+        age: this.age,
+        city: this.city,
+        email: this.email,
+        password: this.pass
+      };
+      this.signUp(formData);
     }
   }
 };
@@ -54,8 +58,6 @@ export default {
 .signUp {
   width: 50%;
   text-align: left;
-  padding-top: 100px;
-  padding-bottom: 50px;
   margin: auto;
 }
 
@@ -67,7 +69,21 @@ export default {
 .form {
   border: 2px solid purple;
   border-radius: 10px;
-  padding: 30px;
+  padding: 20px;
   padding-bottom: 50px;
+  box-shadow: 3px 3px 5px;
+}
+
+label {
+  display: block;
+}
+
+input {
+  width: 70%;
+}
+
+button {
+  margin: 5px 0;
+  padding: 5px 10px;
 }
 </style>

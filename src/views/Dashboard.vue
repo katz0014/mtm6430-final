@@ -1,35 +1,43 @@
 <template>
   <div class="dashboard">
     <div class="dashboard-container">
+      <h1>Dashboard</h1>
       <h3>Welcome {{ userData.name }}!</h3>
-      <p>You signed up with the email: {{ userData.email }}</p>
-      <p v-for="input in userInput" :key="userInput.id">{{ userInput }}</p>
-      <el-button class="button" type="primary" @click="clearData"
-        >CLEAR YOUR MIND</el-button
-      >
+      <p>You are logged in with the email: {{ userData.email }}</p>
+      <form @submit.prevent="submitForm">
+        <label for="name">Edit Your Name:</label>
+        <input type="text" id="name" v-model="user.name" />
+        <br />
+        <input type="submit" value="submit" />
+      </form>
     </div>
   </div>
 </template>
 <script>
-import { mapState } from "vuex";
-import { mapGetters } from "vuex";
-
-const info = ["name", "email", "password"];
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  data() {
-    return {
-      userData: {
-        name: "",
-        email: ""
-      },
-      userInput: []
-    };
+  computed: {
+    ...mapGetters({
+      userData: "getUser"
+    }),
+    user() {
+      return !this.userData ? false : this.userData;
+    }
   },
-  computed: mapGetters(["getFormName", "getFormEmail"]),
-  created() {
-    this.userData.name = this.getFormName;
-    this.userData.email = this.getFormEmail;
+  create() {
+    this.getuserdata();
+  },
+
+  methods: {
+    ...mapActions(["fetchUser", "updateUser"]),
+    getUserData() {
+      let userEmail = localStorage.getItem("userEmail");
+      this.fetchUser(userEmail);
+    },
+    formSubmit() {
+      this.updateUser();
+    }
   }
 };
 </script>
