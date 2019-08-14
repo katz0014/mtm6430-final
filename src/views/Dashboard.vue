@@ -1,16 +1,41 @@
 <template>
   <div class="dashboard">
-    <div class="dashboard-container">
-      <h1>Dashboard</h1>
-      <h3>Welcome {{ userData.name }}!</h3>
-      <p>You are logged in with the email: {{ userData.email }}</p>
-      <form @submit.prevent="submitForm">
+    <h1>Dashboard</h1>
+    <h3>Welcome {{ user.name }}!</h3>
+    <p>You are logged in with the email: {{ user.email }}</p>
+    <form @submit.prevent="submitForm">
+      <div>
         <label for="name">Edit Your Name:</label>
         <input type="text" id="name" v-model="user.name" />
-        <br />
-        <input type="submit" value="submit" />
-      </form>
-    </div>
+      </div>
+      <br />
+      <div>
+        <label for="age">Edit Your Age:</label>
+        <input type="text" id="age" v-model="user.age" />
+      </div>
+      <br />
+      <div>
+        <label for="age">Edit Your City:</label>
+        <input type="text" id="city" v-model="user.city" />
+      </div>
+      <br />
+      <div>
+        <label for="job">Edit Your Job:</label>
+        <input type="text" id="job" v-model="user.job" />
+      </div>
+      <br />
+      <div>
+        <label for="email">Edit Your Email:</label>
+        <input type="text" id="email" v-model="user.email" />
+      </div>
+      <br />
+      <div>
+        <label for="password">Edit Your Password:</label>
+        <input type="text" id="pass" v-model="user.password" />
+      </div>
+      <br />
+      <input type="submit" value="Submit" class="button" />
+    </form>
   </div>
 </template>
 <script>
@@ -26,7 +51,7 @@ export default {
     }
   },
   create() {
-    this.getuserdata();
+    this.getuserData();
   },
 
   methods: {
@@ -34,33 +59,28 @@ export default {
     getUserData() {
       let userEmail = localStorage.getItem("userEmail");
       this.fetchUser(userEmail);
+
+      let userName = localStorage.getItem("userName");
+      this.fetchUser(userName);
     },
-    formSubmit() {
+    submitForm() {
       this.updateUser();
     }
   }
 };
 </script>
-<style lang="scss">
-.dashboard {
-  text-align: left;
-  margin: auto;
-  padding-top: 80px;
-}
-.dashboard-container {
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid purple;
-  width: 50%;
+<style>
+form {
+  width: 70%;
   margin: 0 auto;
+  text-align: left;
 }
 
-.dashboard-container .button {
-  padding: 10px;
-  margin-top: 30px;
+input {
+  width: 75%;
 }
 
-.dashboard-container p {
-  margin-bottom: 15px;
+.button {
+  width: 10%;
 }
 </style>

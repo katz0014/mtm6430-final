@@ -15,6 +15,10 @@
         <input type="city" v-model="city" required />
       </div>
       <div>
+        <label for="job">Job</label>
+        <input type="job" v-model="job" required />
+      </div>
+      <div>
         <label for="email">Email</label>
         <input type="email" v-model="email" required />
       </div>
@@ -35,6 +39,7 @@ export default {
       name: "",
       age: "",
       city: "",
+      job: "",
       email: "",
       pass: ""
     };
@@ -46,6 +51,7 @@ export default {
         name: this.name,
         age: this.age,
         city: this.city,
+        job: this.job,
         email: this.email,
         password: this.pass
       };

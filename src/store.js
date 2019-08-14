@@ -37,16 +37,22 @@ export default new Vuex.Store({
       commit,
       dispatch
     }, authData) {
-      axiosAuth.post("accounts:signUp?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0", {
+      axiosAuth
+        .post("accounts:signUp?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0", {
           email: authData.email,
           password: authData.password,
           returnSecureToken: true
-        }).then(res => {
+        })
+        .then(res => {
           console.log(res);
+
+          // Save the auth info in the state
           commit("AUTH_USER", {
             token: res.data.idToken,
             userId: res.data.localId
           });
+
+          // Local Storage
           const now = new Date();
           const expirationDate = new Date(
             now.getTime() + res.data.expiresIn * 1000
@@ -55,53 +61,64 @@ export default new Vuex.Store({
           localStorage.setItem("token", res.data.idToken);
           localStorage.setItem("userId", res.data.localId);
           localStorage.setItem("expirationDate", expirationDate);
+
           localStorage.setItem("userEmail", authData.email);
 
           dispatch("storeUser", authData);
 
           router.push({
-            name: "dashboard "
+            name: "dashboard"
           });
         })
         .catch(error => {
-          console.log(error.response.data.error.message);
+          if (error.response) {
+            console.log(error.response.data.error.message);
 
-          commit("SET_ERROR", error.response.data.error.message);
+            commit("SET_ERROR", error.response.data.error.message);
+          }
         });
     },
     signIn({
       commit
     }, authData) {
-      axiosAuth.post(
-        "accounts:signInWithPassword?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0", {
-          email: authData.email,
-          password: authData.password,
-          returnSecureToken: true
-        }).then(res => {
-        console.log(res);
-        commit("AUTH_USER", {
-          token: res.data.idToken,
-          userId: res.data.localId
+      axiosAuth
+        .post(
+          "accounts:signInWithPassword?key=AIzaSyCbBE_xIoAmToCa8AYG0fIWI3azcrdKCc0 ", {
+            email: authData.email,
+            password: authData.password,
+            returnSecureToken: true
+          }
+        )
+        .then(res => {
+          console.log(res);
+          commit("AUTH_USER", {
+            token: res.data.idToken,
+            userId: res.data.localId
+          });
+          // Local Storage
+          const now = new Date();
+          const expirationDate = new Date(
+            now.getTime() + res.data.expiresIn * 1000
+          );
+
+          localStorage.setItem("token", res.data.idToken);
+          localStorage.setItem("userId", res.data.localId);
+          localStorage.setItem("expirationDate", expirationDate);
+
+          localStorage.setItem("userEmail", authData.email);
+
+          router.push({
+            name: "dashboard"
+          });
+        })
+        .catch(error => {
+          if (error.response) {
+            console.log(error.response.data.error.message);
+
+            commit("SET_ERROR", error.response.data.error.message);
+          }
         });
-
-        const now = new Date();
-        const expirationDate = new Date(
-          now.getTime() + res.data.expiresIn * 1000
-        );
-
-        localStorage.setItem("token", res.data.idToken);
-        localStorage.setItem("userId", res.data.localId);
-        localStorage.setItem("expirationDate", expirationDate);
-        localStorage.setItem("userEmail", authData.email);
-
-        router.push({
-          name: "dashboard "
-        });
-      }).catch(error => {
-        console.log(error.response.data.error.message);
-        commit("SET_ERROR", error.response.data.error.message);
-      });
-    },
+    }, // closing singIn
     clearError({
       commit
     }) {
@@ -114,8 +131,10 @@ export default new Vuex.Store({
       localStorage.removeItem("expirationDate");
       localStorage.removeItem("userId");
 
+      // commit mutation to clear the state
       commit("CLEAR_DATA");
 
+      // send user to singin route
       router.push({
         name: "signin"
       });
@@ -137,41 +156,62 @@ export default new Vuex.Store({
         userId: userId
       });
     },
-    storeuser({
+    storeUser({
       state
     }, userData) {
       if (!state.idToken) {
         return;
       }
-      axios.post("https://katz0014-final.firebaseio.com/users.json" + "?auth=" + state.idToken, userData).then(res => console.log(res)).catch(error => console.log(error.message));
+      axios
+        .post(
+          "https://katz0014-final.firebaseio.com/users.json" +
+          "?auth=" +
+          state.idToken,
+          userData
+        )
+        .then(res => console.log(res))
+        .catch(error => console.log(error.message));
     },
     fetchUser({
       commit,
       state
     }, userEmail) {
-      if (!state.idtoken) {
+      if (!state.idToken) {
         return;
       }
-      axios.get("https://katz0014-final.firebaseio.com/users.json" + "?auth=" + state.idToken).then(res => {
-        const data = res.data;
-        for (let key in data) {
-          const user = data[key];
-          if (user.email == userEmail) {
-            console.log(user);
-            user.id = key;
-            commit("STORE_USER", user);
+      axios
+        .get(
+          "https://katz0014-final.firebaseio.com/users.json" +
+          "?auth=" +
+          state.idToken
+        )
+        .then(res => {
+          const data = res.data;
+          for (let key in data) {
+            const user = data[key];
+            if (user.email == userEmail) {
+              console.log(user);
+              user.id = key;
+              commit("STORE_USER", user);
+            }
           }
-        }
-      });
+        });
     },
     updateUser({
       state
     }) {
-      axios.patch("https://katz0014-final.firebaseio.com/users/" + state.user.id + ".json" + "?auth=" + state.idToken, {
-        name: state.user.name
-      }).then(res => {
-        console.log(res);
-      }).catch(error => console.log(error.response));
+      axios
+        .patch(
+          "https://katz0014-final.firebaseio.com/users/" +
+          state.user.id +
+          ".json" +
+          "?auth=" +
+          state.idToken, {
+            name: state.user.name
+          }
+        )
+        .then(res => console.log(res))
+        .catch(error => console.log(error.response));
     }
   },
   getters: {

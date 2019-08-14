@@ -35,7 +35,7 @@ export default new Router({
     },
     {
       path: "/dashboard",
-      name: "Dashboard",
+      name: "dashboard",
       component: Dashboard,
       beforeEnter(to, from, next) {
         if (store.state.idToken) {
