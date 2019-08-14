@@ -65,7 +65,6 @@ export default new Vuex.Store({
           localStorage.setItem("userEmail", authData.email);
 
           dispatch("storeUser", authData);
-
           router.push({
             name: "dashboard"
           });
@@ -170,6 +169,7 @@ export default new Vuex.Store({
           state.idToken,
           userData
         )
+
         .then(res => console.log(res))
         .catch(error => console.log(error.message));
     },
@@ -191,7 +191,7 @@ export default new Vuex.Store({
           for (let key in data) {
             const user = data[key];
             if (user.email == userEmail) {
-              console.log(user);
+              console.log("looking at this" + user.name);
               user.id = key;
               commit("STORE_USER", user);
             }

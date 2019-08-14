@@ -72,12 +72,12 @@ export default {
   margin: 0 auto;
 }
 
-.form {
+form {
   border: 2px solid purple;
   border-radius: 10px;
   padding: 20px;
   padding-bottom: 50px;
-  box-shadow: 3px 3px 5px;
+  box-shadow: 3px 4px 10px;
 }
 
 label {
