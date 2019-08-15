@@ -6,32 +6,22 @@
     <form @submit.prevent="submitForm">
       <div>
         <label for="name">Edit Your Name:</label>
-        <input type="text" id="name" v-model="name" />
+        <input type="text" id="name" v-model="user.name" />
       </div>
       <br />
       <div>
         <label for="age">Edit Your Age:</label>
-        <input type="text" id="age" v-model="age" />
+        <input type="text" id="age" v-model="user.age" />
       </div>
       <br />
       <div>
         <label for="age">Edit Your City:</label>
-        <input type="text" id="city" v-model="city" />
+        <input type="text" id="city" v-model="user.city" />
       </div>
       <br />
       <div>
         <label for="job">Edit Your Job:</label>
-        <input type="text" id="job" v-model="job" />
-      </div>
-      <br />
-      <div>
-        <label for="email">Edit Your Email:</label>
-        <input type="text" id="email" v-model="email" />
-      </div>
-      <br />
-      <div>
-        <label for="password">Edit Your Password:</label>
-        <input type="text" id="pass" v-model="password" />
+        <input type="text" id="job" v-model="user.job" />
       </div>
       <br />
       <input type="submit" value="Submit" class="button" />
@@ -42,16 +32,6 @@
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  data() {
-    return {
-      name: "",
-      age: "",
-      city: "",
-      job: "",
-      email: "",
-      password: ""
-    };
-  },
   computed: {
     ...mapGetters({
       userData: "getUser"

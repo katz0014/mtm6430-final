@@ -65,9 +65,7 @@ export default new Vuex.Store({
           localStorage.setItem("userEmail", authData.email);
 
           dispatch("storeUser", authData);
-          router.push({
-            name: "dashboard"
-          });
+
         })
         .catch(error => {
           if (error.response) {
@@ -130,6 +128,7 @@ export default new Vuex.Store({
       localStorage.removeItem("token");
       localStorage.removeItem("expirationDate");
       localStorage.removeItem("userId");
+      localStorage.removeItem("userEmail");
 
       // commit mutation to clear the state
       commit("CLEAR_DATA");
@@ -170,7 +169,12 @@ export default new Vuex.Store({
           userData
         )
 
-        .then(res => console.log(res))
+        .then(res => {
+          console.log(res)
+          router.push({
+            name: "dashboard"
+          });
+        })
         .catch(error => console.log(error.message));
     },
     fetchUser({
@@ -180,6 +184,7 @@ export default new Vuex.Store({
       if (!state.idToken) {
         return;
       }
+      console.log(userEmail)
       axios
         .get(
           "https://katz0014-final.firebaseio.com/users.json" +
@@ -191,7 +196,7 @@ export default new Vuex.Store({
           for (let key in data) {
             const user = data[key];
             if (user.email == userEmail) {
-              console.log("looking at this" + user.name);
+              console.log(user);
               user.id = key;
               commit("STORE_USER", user);
             }
@@ -201,6 +206,7 @@ export default new Vuex.Store({
     updateUser({
       state
     }) {
+
       axios
         .patch(
           "https://katz0014-final.firebaseio.com/users/" +
@@ -208,11 +214,18 @@ export default new Vuex.Store({
           ".json" +
           "?auth=" +
           state.idToken, {
-            name: state.user.name
+            name: state.user.name,
+            age: state.user.age,
+            city: state.user.city,
+            job: state.user.job,
+            email: state.user.email,
+            password: state.user.password
           }
+
         )
         .then(res => console.log(res))
         .catch(error => console.log(error.response));
+
     }
   },
   getters: {
@@ -222,5 +235,5 @@ export default new Vuex.Store({
     getUser(state) {
       return state.user;
     }
-  }
+  },
 });
